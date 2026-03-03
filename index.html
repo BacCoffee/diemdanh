@@ -11,49 +11,43 @@ body{
     text-align:center;
     margin:0;
 }
-.container{ margin-top:40px; }
-
+.container{
+    margin-top:40px;
+}
 button{
-    padding:6px 12px;
-    margin:4px;
+    padding:8px 15px;
+    margin:5px;
     border:none;
     border-radius:6px;
     cursor:pointer;
-    font-size:13px;
 }
-
 .add-btn{ background:#10b981; color:white; }
 .delete-btn{ background:#ef4444; color:white; }
-.copy-btn{ background:#6366f1; color:white; }
-.update-btn{ background:#f59e0b; color:white; }
-
+.admin-panel{ margin-top:20px; }
 .month-box{
     background:rgba(255,255,255,0.1);
     padding:20px;
     margin:20px auto;
-    width:500px;
+    width:400px;
     border-radius:12px;
 }
-
-.input-row{
-    margin-bottom:10px;
-}
-
 input{
-    width:70%;
+    width:90%;
     padding:6px;
+    margin:4px 0;
     border-radius:6px;
     border:none;
 }
-
-.link-display{
-    display:inline-block;
-    margin-top:5px;
-    font-size:13px;
-    opacity:0.6;
-    word-break:break-all;
+a.button{
+    display:block;
+    margin:6px auto;
+    padding:10px;
+    background:white;
+    color:#1e3a8a;
+    text-decoration:none;
+    border-radius:8px;
+    font-weight:bold;
 }
-
 .hidden{ display:none; }
 </style>
 </head>
@@ -71,10 +65,11 @@ input{
 <button class="add-btn" onclick="addMonth()">➕ Thêm Tháng</button>
 <div id="months"></div>
 </div>
+
 </div>
 
 <script>
-const PASSWORD = "123456";
+const PASSWORD = "123456"; // 🔐 ĐỔI MẬT KHẨU Ở ĐÂY
 
 let data = JSON.parse(localStorage.getItem("attendanceData")) || [];
 
@@ -88,7 +83,9 @@ function login(){
         document.getElementById("loginBox").classList.add("hidden");
         document.getElementById("adminPanel").classList.remove("hidden");
         render();
-    } else alert("Sai mật khẩu!");
+    }else{
+        alert("Sai mật khẩu!");
+    }
 }
 
 function addMonth(){
@@ -110,45 +107,36 @@ function deleteMonth(index){
 function updateLink(index,key,value){
     data[index].links[key] = value;
     saveData();
-}
-
-function copyLink(value){
-    if(!value) return alert("Chưa có link");
-    navigator.clipboard.writeText(value);
-    alert("Đã copy!");
+    render();
 }
 
 function render(){
     let container = document.getElementById("months");
     container.innerHTML="";
-    data.forEach((month,index)=>{
-        let div=document.createElement("div");
+    data.forEach((month, index)=>{
+        let div = document.createElement("div");
         div.className="month-box";
-        div.innerHTML=`
+        div.innerHTML = `
         <h2>Tháng ${month.name}</h2>
-        ${createRow(index,"k67","Khối 6 & 7")}
-        ${createRow(index,"k8","Khối 8")}
-        ${createRow(index,"k9","Khối 9")}
-        ${createRow(index,"k10","Khối 10")}
-        ${createRow(index,"k11","Khối 11")}
-        ${createRow(index,"k12","Khối 12")}
-        ${createRow(index,"clb","CLB")}
+        ${createInput(index,"k67","Khối 6 & 7")}
+        ${createInput(index,"k8","Khối 8")}
+        ${createInput(index,"k9","Khối 9")}
+        ${createInput(index,"k10","Khối 10")}
+        ${createInput(index,"k11","Khối 11")}
+        ${createInput(index,"k12","Khối 12")}
+        ${createInput(index,"clb","CLB")}
         <button class="delete-btn" onclick="deleteMonth(${index})">Xóa Tháng</button>
         `;
         container.appendChild(div);
     });
 }
 
-function createRow(index,key,label){
+function createInput(index,key,label){
     let value = data[index].links[key] || "";
     return `
-    <div class="input-row">
-        <input value="${value}" 
-        oninput="updateLink(${index},'${key}',this.value)">
-        <button class="copy-btn" onclick="copyLink('${value}')">📋 Copy</button>
-        <a class="update-btn" href="${value}" target="_blank">🔗 Mở</a>
-        <div class="link-display">${value}</div>
-    </div>
+    <input placeholder="Link ${label}" value="${value}"
+    onchange="updateLink(${index},'${key}',this.value)">
+    <a class="button" href="${value}" target="_blank">${label}</a>
     `;
 }
 </script>
